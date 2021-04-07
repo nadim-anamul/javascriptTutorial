@@ -10,7 +10,9 @@
  */
 
 function countHtmlElement(dom) {
-    return document.getElementsByTagName(''+dom).length
+    let domNumber =  document.getElementsByTagName(''+dom).length;
+    let domNumberString = domNumber + ' ' + dom;
+    return domNumberString;
 }
 let result = countHtmlElement('button'); // call countHtmlElement function with the parameter and keep the return data in result variable
 console.log(result); // print the result data in console
