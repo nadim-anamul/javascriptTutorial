@@ -11,7 +11,10 @@ function getUserInput() {
     return parseInt(userInput.value)
 }
 /**
- * generate and write control log
+ * 
+ * @param {*} operator 
+ * @param {*} resultBeforeCalc 
+ * @param {*} calcNumber 
  */
 function createAndWriteOutput(operator, resultBeforeCalc, calcNumber) {
     const calcDescription = `${resultBeforeCalc} ${operator} ${calcNumber}`;
@@ -41,83 +44,66 @@ function writeToLog(
 
 }
 /**
- * do the addition
+ * 
+ * @param {*} calculationType 
  */
-function add() {
+
+function calculateResult(calculationType) {
     /**
      * use const for variable where that variable value will not be reassigned
      * use const on block statement as local variable most likely are not reassigned
      */
     const enteredNumber = getUserInput();
     const initialResult = currentResult;
+    let methOperator;
+    if (calculationType === 'ADD') {
+        currentResult += enteredNumber;
+        methOperator = '+';
+    } else if (calculationType === 'SUBTRACT') {
+        currentResult -= enteredNumber;
+        methOperator = '-';
+    } else if (calculationType === 'MULTIPLY') {
+        currentResult *= enteredNumber;
+        methOperator = '*';
+    } else if (calculationType === 'DIVISION') {
+        currentResult /= enteredNumber;
+        methOperator = '/';
+    }
     
-    currentResult = currentResult + enteredNumber;
+    
     /**
      * parseInt to convert the string to integer value
      * by default all the user input data is in string mode
      */
-     createAndWriteOutput('+', initialResult, enteredNumber);
-     writeToLog("ADD", initialResult, enteredNumber, currentResult);
+    createAndWriteOutput(methOperator, initialResult, enteredNumber);
+    writeToLog(calculationType, initialResult, enteredNumber, currentResult);
+}
+/**
+ * do the addition
+ */
+function add() {
+    calculateResult('ADD');
 }
 
 /**
  * do the subtraction
  */
 function subtract() {
-    /**
-     * use const for variable where that variable value will not be reassigned
-     * use const on block statement as local variable most likely are not reassigned
-     */
-    const enteredNumber = getUserInput();
-    const initialResult = currentResult;
-    
-    currentResult = currentResult - enteredNumber;
-    /**
-     * parseInt to convert the string to integer value
-     * by default all the user input data is in string mode
-     */
-     createAndWriteOutput('-', initialResult, enteredNumber);
-     writeToLog("SUBTRACT", initialResult, enteredNumber, currentResult);
+    calculateResult('SUBTRACT');
 }
 
 /**
  * do the multiplication
  */
 function multiply() {
-    /**
-     * use const for variable where that variable value will not be reassigned
-     * use const on block statement as local variable most likely are not reassigned
-     */
-    const enteredNumber = getUserInput();
-    const initialResult = currentResult;
-    
-    currentResult = currentResult * enteredNumber;
-    /**
-     * parseInt to convert the string to integer value
-     * by default all the user input data is in string mode
-     */
-     createAndWriteOutput('*', initialResult, enteredNumber);
-     writeToLog("MULTIPLY", initialResult, enteredNumber, currentResult);
+    calculateResult('MULTIPLY');
 }
 
 /**
  * do the division
  */
 function division() {
-    /**
-     * use const for variable where that variable value will not be reassigned
-     * use const on block statement as local variable most likely are not reassigned
-     */
-    const enteredNumber = getUserInput();
-    const initialResult = currentResult;
-    
-    currentResult = currentResult / enteredNumber;
-    /**
-     * parseInt to convert the string to integer value
-     * by default all the user input data is in string mode
-     */
-     createAndWriteOutput('/', initialResult, enteredNumber);
-     writeToLog("DIVISION", initialResult, enteredNumber, currentResult);
+    calculateResult('DIVISION');
 }
 
 addBtn.addEventListener('click', add); // on plus button click call add function
