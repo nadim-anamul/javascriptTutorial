@@ -1,126 +1,118 @@
-const defaultResult = 0;
-let currentResult = defaultResult;
-let logEntries = [];
+const ATTACK_VALUE = 10;
+const HEAL_VALUE = 20;
+const MONSTER_ATTACK_VALUE = 14;
+const STRONG_ATTACK_VALUE = 17;
 
+const enteredValue = prompt('Maximum life for you and monster.','100');
+
+
+let chosenMaxLife = parseInt(enteredValue);
 
 /**
- * get input from user input
- * 
+ * check if the entered number is valid or not
  */
-function getUserInput() {
-    return parseInt(userInput.value)
+if ( isNaN(chosenMaxLife) || chosenMaxLife < 0) {
+    chosenMaxLife = 100;
 }
+
+let currentPlayerHealth = chosenMaxLife;
+let currentMonsterHealth = chosenMaxLife;
+let hasBonusLife = true;
+
+adjustHealthBars(chosenMaxLife);
+
 /**
- * generate and write control log
+ * reset the game and 
+ * reset to initial value
  */
-function createAndWriteOutput(operator, resultBeforeCalc, calcNumber) {
-    const calcDescription = `${resultBeforeCalc} ${operator} ${calcNumber}`;
-    outputResult( currentResult , calcDescription ); // from vendor.js
+function reset() {
+    currentPlayerHealth = chosenMaxLife;
+    currentMonsterHealth = chosenMaxLife;
+    resetGame(chosenMaxLife);
 }
+
 /**
- * store the log of calculation
- * @param {operation} operationIdentifier identifies the operation
- * @param {result} prevResult get the previous result
- * @param {new number} operationNumber get the entered number
- * @param {result} newResult get new result
+ * check the win or lose condition
  */
 
-function writeToLog(
-    operationIdentifier, 
-    prevResult, 
-    operationNumber, 
-    newResult) {
-    const logEntry = {
-        operation: operationIdentifier,
-        prevResult: prevResult,
-        number: operationNumber,
-        result: newResult
+function endRound() {
+    const initialPlayerHealth = currentPlayerHealth;
+    const playerDamage = dealPlayerDamage(MONSTER_ATTACK_VALUE);
+    currentPlayerHealth -= playerDamage;
+
+    if (currentPlayerHealth <= 0 && hasBonusLife) {
+        hasBonusLife = false;
+        removeBonusLife();
+        currentPlayerHealth = initialPlayerHealth;
+        setPlayerHealth(initialPlayerHealth);
+        alert('You would be dead but bonus life saved you.')
     }
-    logEntries.push(logEntry);
-    console.log(logEntries);
 
-}
-/**
- * do the addition
- */
-function add() {
-    /**
-     * use const for variable where that variable value will not be reassigned
-     * use const on block statement as local variable most likely are not reassigned
-     */
-    const enteredNumber = getUserInput();
-    const initialResult = currentResult;
-    
-    currentResult = currentResult + enteredNumber;
-    /**
-     * parseInt to convert the string to integer value
-     * by default all the user input data is in string mode
-     */
-     createAndWriteOutput('+', initialResult, enteredNumber);
-     writeToLog("ADD", initialResult, enteredNumber, currentResult);
+    if (currentMonsterHealth <= 0 && currentPlayerHealth > 0) {
+        alert('You Win!');
+        reset();
+    } else if (currentPlayerHealth <= 0 && currentMonsterHealth > 0) {
+        alert('You Lose!');
+        reset();
+    } else if (currentPlayerHealth === 0 && currentMonsterHealth === 0) {
+        alert('You Lose!');
+        reset();
+    }
 }
 
 /**
- * do the subtraction
+ * 
+ * @param {attack Mode} mode 
  */
-function subtract() {
-    /**
-     * use const for variable where that variable value will not be reassigned
-     * use const on block statement as local variable most likely are not reassigned
-     */
-    const enteredNumber = getUserInput();
-    const initialResult = currentResult;
+
+function attackMonster(mode) {
+    let maxDamage;
+    if (mode === 'ATTACK') {
+        maxDamage = ATTACK_VALUE;
+    } else {
+        maxDamage = STRONG_ATTACK_VALUE;
+    }
+    const damage = dealMonsterDamage(maxDamage);
+    currentMonsterHealth -= damage;
+    endRound();
     
-    currentResult = currentResult - enteredNumber;
-    /**
-     * parseInt to convert the string to integer value
-     * by default all the user input data is in string mode
-     */
-     createAndWriteOutput('-', initialResult, enteredNumber);
-     writeToLog("SUBTRACT", initialResult, enteredNumber, currentResult);
+    
 }
 
 /**
- * do the multiplication
+ * attack button function
  */
-function multiply() {
-    /**
-     * use const for variable where that variable value will not be reassigned
-     * use const on block statement as local variable most likely are not reassigned
-     */
-    const enteredNumber = getUserInput();
-    const initialResult = currentResult;
-    
-    currentResult = currentResult * enteredNumber;
-    /**
-     * parseInt to convert the string to integer value
-     * by default all the user input data is in string mode
-     */
-     createAndWriteOutput('*', initialResult, enteredNumber);
-     writeToLog("MULTIPLY", initialResult, enteredNumber, currentResult);
+
+function attackHandler() {
+    attackMonster('ATTACK');
 }
 
 /**
- * do the division
+ * strong attack button function
  */
-function division() {
-    /**
-     * use const for variable where that variable value will not be reassigned
-     * use const on block statement as local variable most likely are not reassigned
-     */
-    const enteredNumber = getUserInput();
-    const initialResult = currentResult;
-    
-    currentResult = currentResult / enteredNumber;
-    /**
-     * parseInt to convert the string to integer value
-     * by default all the user input data is in string mode
-     */
-     createAndWriteOutput('/', initialResult, enteredNumber);
-     writeToLog("DIVISION", initialResult, enteredNumber, currentResult);
+
+function strongAttackHandler() {
+    attackMonster('STRONG_ATTACK');
 }
 
-addBtn.addEventListener('click', add); // on plus button click call add function
-subtractBtn.addEventListener('click', subtract); // on minus button click call subtract function
-multiplyBtn.addEventListener('click', multiply); // on multiply button click call multiply function
-divideBtn.addEventListener('click', division); // on division button click call division function
+/**
+ * heal button function
+ */
+function healAttackHandler() {
+    let healValue;
+    if (currentPlayerHealth >= chosenMaxLife - HEAL_VALUE) {
+        alert("you can't heal more than max health value");
+        healValue = chosenMaxLife - currentPlayerHealth;
+    } else {
+        healValue = HEAL_VALUE;
+        
+    }
+    increasePlayerHealth(healValue);
+    currentPlayerHealth += healValue;
+    endRound();
+}
+
+
+attackBtn.addEventListener('click', attackHandler);
+strongAttackBtn.addEventListener('click', strongAttackHandler);
+healBtn.addEventListener('click', healAttackHandler);
